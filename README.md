@@ -7,6 +7,46 @@ Studio, and a self-updating distribution pipeline.
 This case study is about the engineering decisions that make those parts work
 together.
 
+> ## Featured engineering artifact
+>
+> **[`ENGINEERING_MANIFEST.md`](ENGINEERING_MANIFEST.md)** is the primary
+> evidence in this repository. It gives a hiring reviewer a technical view of
+> the work: system boundaries, runtime composition, authoritative multiplayer
+> design, native rendering and UI, persistence, content tooling, security,
+> release engineering, operational constraints, and next priorities.
+>
+> The manifest is intentionally explicit about what is implemented, what is a
+> migration or reference path, and what remains recommended work. That makes it
+> useful as an engineering record as well as a portfolio artifact.
+
+## Engineering ownership represented here
+
+This project demonstrates end-to-end engineering across:
+
+- architecture and dependency-boundary design for a custom game runtime;
+- authoritative multiplayer simulation and a versioned client/server protocol;
+- native Windows input, Direct3D 11 rendering, and production UI integration;
+- SQLite-backed account, progression, inventory, quest, and clan persistence;
+- data-first world, terrain, scripting, and content-authoring workflows;
+- security controls for hostile clients, authenticated transport, and privileged
+  actions; and
+- signed, validated, self-updating distribution from bootstrap through player
+  client.
+
+The scope is deliberately broader than a single feature: it shows how the
+subsystems are designed to compose into a shippable product.
+
+## Reviewer map
+
+| If you want evidence of… | Start with… |
+| --- | --- |
+| System design and boundaries | [System context and boundaries](ENGINEERING_MANIFEST.md#3-system-context-and-boundaries) and [Repository and project boundaries](ENGINEERING_MANIFEST.md#4-repository-and-project-boundaries) |
+| Multiplayer/backend engineering | [Authoritative server](ENGINEERING_MANIFEST.md#6-authoritative-server), [Network protocol](ENGINEERING_MANIFEST.md#7-network-protocol), and [Persistence and data ownership](ENGINEERING_MANIFEST.md#10-persistence-and-data-ownership) |
+| Native client and graphics | [Native player client](ENGINEERING_MANIFEST.md#8-native-player-client) and [Rendering](ENGINEERING_MANIFEST.md#9-rendering) |
+| Tools and content pipeline | [Content and scripting pipeline](ENGINEERING_MANIFEST.md#11-content-and-scripting-pipeline) and [Studio authoring stack](ENGINEERING_MANIFEST.md#12-studio-authoring-stack) |
+| Security and production thinking | [Security model](ENGINEERING_MANIFEST.md#14-security-model), [Release and update chain](ENGINEERING_MANIFEST.md#15-release-and-update-chain), and [Validation and operations](ENGINEERING_MANIFEST.md#16-validation-and-operations) |
+| Technical judgment and growth areas | [Strengths and constraints](ENGINEERING_MANIFEST.md#17-strengths-and-constraints) and [Recommended priorities](ENGINEERING_MANIFEST.md#18-recommended-priorities) |
+
 ## The product problem
 
 World of Ato needs to support several kinds of work without allowing tooling
