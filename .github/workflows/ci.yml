@@ -12,10 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check documentation and evidence
+      - name: Check documentation
         shell: bash
         run: |
           test -s README.md
-          test -s evidence/world-ato-layered.png
-          test -s evidence/world-ato-layered-4x4.png
           ! grep -RInE '(^|[^A-Za-z])(ghp_|github_pat_|AKIA[0-9A-Z]{16}|BEGIN (RSA|OPENSSH|EC) PRIVATE KEY)' . --exclude-dir=.git

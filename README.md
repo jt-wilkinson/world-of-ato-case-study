@@ -1,37 +1,133 @@
-# World of Ato — Embroidery Digitizing Case Study
+# World of Ato — Engineering Case Study
 
-This repository documents a focused KSuite production problem: converting a small, layered **World of Ato** character mark into a sewable Brother PES design without losing the visual relationships that make the artwork recognizable.
+World of Ato is a Windows-native multiplayer RPG built as a complete game
+runtime: an authoritative server, a native player client, a content-authoring
+Studio, and a self-updating distribution pipeline.
 
-## The problem
+This case study is about the engineering decisions that make those parts work
+together.
 
-Small artwork is unforgiving. A preview can look correct while the stitch plan introduces dense blobs, closes intentional gaps, loses toes or facial details, or creates unsafe exposed travel. The target was a deterministic, machine-aware design for a Brother SE700 hoop.
+## The product problem
 
-## Approach
+World of Ato needs to support several kinds of work without allowing tooling
+concerns to leak into the shipped game:
 
-1. Normalize artwork into physical 0.1 mm geometry.
-2. Preserve alpha and layer semantics instead of inventing a global base fill.
-3. Generate typed stitch, move, trim, tie-on, tie-off, stop, color-change, and end commands.
-4. Protect small details during density retries and travel optimization.
-5. Validate hoop fit, stitch budgets, relocations, and PES read-back.
-6. Compare successive regressions by stitch topology and production metrics, not preview appearance alone.
+- players need a responsive native 3D client;
+- the server must remain authoritative over movement, progression, inventory,
+  quests, clans, and persistent state;
+- designers need an editor for worlds, terrain, scripts, and content;
+- releases need a repeatable bootstrap, launcher, validation, and update path;
+- the public website must remain separate from gameplay and player data.
 
-## Included evidence
+The central design goal is a clear boundary between authoring, simulation,
+presentation, and distribution.
 
-- `evidence/world-ato-layered.png` — layered design preview.
-- `evidence/world-ato-layered-4x4.png` — 4x4 hoop-oriented preview.
-- `evidence/world-ato-fine-guard.png` — detail-preservation regression.
-- `evidence/world-ato-toe-regression.png` — topology regression focused on small features.
+## System shape
 
-The source engine and acceptance rules live in [KSuite](https://github.com/jt-wilkinson/ksuite). The binary PES files are intentionally not mirrored here; the case study keeps the repository reviewable and avoids treating generated machine output as source.
+```mermaid
+flowchart LR
+    Designer[World designer] --> Studio[Studio]
+    Studio --> Assets[Versioned world and content assets]
+    Assets --> Server[Authoritative game server]
+    Assets --> Client[Native player client]
+    Client <-->|TLS/TCP game protocol| Server
+    Server --> DB[(SQLite player data)]
+    Bootstrap[Bootstrap and launcher] --> Client
+    Website[Public website] -->|signed release artifacts| Bootstrap
+```
 
-## What changed
+The server owns gameplay outcomes and persistence. The client sends intent and
+renders replicated state. Studio edits versioned assets; it is not part of the
+player-client dependency graph. The website is a public distribution and
+marketing surface, not a gameplay backend.
 
-The key lesson was to make production constraints explicit in the intermediate representation. That allowed the optimizer to reduce wasteful travel and density without silently changing the artwork's topology.
+## Runtime architecture
 
-## Reproducibility
+The shipping runtime is primarily .NET 10 and C#:
 
-Run the KSuite validation tools against the original artwork and the documented machine profile. A real sew-out remains the final authority for production quality.
+| Surface | Responsibility |
+| --- | --- |
+| `WorldOfAto.Engine` | Shared world model, simulation primitives, assets, terrain, scripting, and protocol contracts |
+| `WorldOfAto.Server` | Authoritative simulation, sessions, gameplay services, accounts, and persistence |
+| `WorldOfAto.Client.Native` | SDL3 input, Direct3D 11 rendering, NoesisGUI presentation, and network session |
+| `WorldOfAto.UI` / `WorldOfAto.UI.Noesis` | Owned player design system, MVVM state, XAML views, and UI integration |
+| Studio | World and content authoring, validation, and preview |
+| Bootstrap / launcher | Signed update verification, installation, and client launch |
+| Website | Public pages and release-artifact distribution |
+
+The authoritative server runs the simulation and writes player state to
+SQLite. The client does not submit trusted gameplay results. Network messages
+use a versioned, newline-delimited JSON protocol over TLS/TCP, with bounded
+frames, sequence checks, rate limits, and explicit authentication.
+
+## Key engineering decisions
+
+### One authority for gameplay
+
+Movement, progression, inventory, quests, clans, commerce, and other world
+mutations are server-owned. The client requests actions; the server validates,
+simulates, persists, and replicates the result.
+
+### A shared engine with separate responsibilities
+
+The engine shares domain types and behavior across client, server, Studio, and
+validation paths without taking a dependency on a UI framework. Presentation
+and authoring remain at the edges, while the server retains ownership of
+simulation and persistence.
+
+### A deliberate shipping client boundary
+
+The player client uses SDL3, Direct3D 11, and NoesisGUI. It has one intentional
+graphics device and one production UI path. Historical and authoring projects
+may use different technologies, but they are not silently included in the
+shipping player dependency graph.
+
+### Data-first content
+
+World scripts, item catalogs, quests, dialogues, NPCs, terrain, meshes,
+materials, and animations are versioned assets. Custom formats and AtoScript
+are validated and bounded at their loading boundaries.
+
+### Update integrity as part of the product
+
+The bootstrap updates the launcher, and the launcher updates the native game
+client. Release generations are staged and validated before promotion; package
+contents, hashes, signatures, archive paths, and endpoint configuration are
+checked as part of the update flow.
+
+## What this case study demonstrates
+
+World of Ato’s main engineering challenge is integration: keeping a realtime
+game, an editor, a persistent backend, a native renderer, and a safe release
+pipeline aligned while each remains independently understandable.
+
+The architecture favors explicit contracts and validation over implicit
+coupling:
+
+- the runtime solution filter defines the shipping boundary;
+- the protocol version defines client/server compatibility;
+- the server defines data ownership and gameplay authority;
+- asset formats define the authoring-to-runtime contract; and
+- release validators define what can be shipped.
+
+## Verification and reproducibility
+
+Use the World of Ato runtime solution and validation entry points from the
+main project:
+
+```powershell
+$env:DOTNET_SYSTEM_GLOBALIZATION_USENLS = '1'
+dotnet build .\WorldOfAto.Runtime.slnf -c Release
+dotnet run --project .\src\WorldOfAto.UI.Validation -c Release
+```
+
+The validation path checks UI/resource integrity, production document loading,
+renderer and UI lifecycle rules, recursive player dependencies, and prohibited
+legacy dependencies. Server smoke modes cover simulation boot, catalogs, items,
+progression, permissions, and clan lifecycle.
 
 ## License
 
-Documentation and evidence in this repository are released under the MIT License. Artwork remains the property of its respective rights holders.
+This case-study documentation is released under the MIT License. World of Ato
+artwork, code, and game assets remain the property of their respective rights
+holders.
