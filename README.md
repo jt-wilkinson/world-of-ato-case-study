@@ -9,19 +9,18 @@ together.
 
 > ## Featured engineering artifact
 >
-> **[`ENGINEERING_MANIFEST.md`](ENGINEERING_MANIFEST.md)** is the primary
-> evidence in this repository. It gives a hiring reviewer a technical view of
-> the work: system boundaries, runtime composition, authoritative multiplayer
-> design, native rendering and UI, persistence, content tooling, security,
-> release engineering, operational constraints, and next priorities.
+> **[`ENGINEERING_MANIFEST.md`](ENGINEERING_MANIFEST.md)** is the detailed
+> technical overview of World of Ato. It brings together the runtime
+> architecture, multiplayer model, native rendering and UI, persistence,
+> content tooling, security, release engineering, operational constraints, and
+> next priorities.
 >
-> The manifest is intentionally explicit about what is implemented, what is a
-> migration or reference path, and what remains recommended work. That makes it
-> useful as an engineering record as well as a portfolio artifact.
+> It distinguishes the systems that are implemented from migration/reference
+> paths and recommended future work.
 
-## Engineering ownership represented here
+## Engineering scope
 
-This project demonstrates end-to-end engineering across:
+The implementation spans:
 
 - architecture and dependency-boundary design for a custom game runtime;
 - authoritative multiplayer simulation and a versioned client/server protocol;
@@ -33,8 +32,8 @@ This project demonstrates end-to-end engineering across:
 - signed, validated, self-updating distribution from bootstrap through player
   client.
 
-The scope is deliberately broader than a single feature: it shows how the
-subsystems are designed to compose into a shippable product.
+The scope is deliberately broader than a single feature. These subsystems are
+designed to compose into one shippable product.
 
 ## Reviewer map
 

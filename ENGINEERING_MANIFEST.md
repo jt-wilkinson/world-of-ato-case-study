@@ -1,15 +1,14 @@
 # World of Ato — Engineering Manifest
 
-> **Primary portfolio artifact.** Architecture and implementation snapshot for
-> World of Ato. Implemented behavior, migration/reference paths, and future
-> recommendations are kept distinct so this document can serve as credible
-> technical evidence for engineering review.
+> Architecture and implementation snapshot for World of Ato. Implemented
+> behavior, migration/reference paths, and future recommendations are kept
+> distinct.
 
 This manifest represents end-to-end work across runtime architecture,
 authoritative multiplayer systems, native graphics and UI, persistence,
-content tooling, security, release engineering, and operations. It is written
-for a technical reviewer who wants to understand not only what technologies
-are present, but why the boundaries exist and what remains to be improved.
+content tooling, security, release engineering, and operations. It explains not
+only which technologies are present, but why the boundaries exist and what
+remains to be improved.
 
 ## 1. System summary
 
