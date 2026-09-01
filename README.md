@@ -7,6 +7,9 @@ Studio, and a self-updating distribution pipeline.
 This case study is about the engineering decisions that make those parts work
 together.
 
+It documents the game runtime itself: the boundaries between simulation,
+presentation, authoring, persistence, networking, and release delivery.
+
 > ## Featured engineering artifact
 >
 > **[`ENGINEERING_MANIFEST.md`](ENGINEERING_MANIFEST.md)** is the detailed
