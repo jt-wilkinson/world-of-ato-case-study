@@ -126,6 +126,11 @@ renderer and UI lifecycle rules, recursive player dependencies, and prohibited
 legacy dependencies. Server smoke modes cover simulation boot, catalogs, items,
 progression, permissions, and clan lifecycle.
 
+For the complete architecture snapshot, see
+[`ENGINEERING_MANIFEST.md`](ENGINEERING_MANIFEST.md). It records the current
+implementation, explicit migration boundaries, security model, operational
+constraints, and recommended engineering priorities.
+
 ## License
 
 This case-study documentation is released under the MIT License. World of Ato
